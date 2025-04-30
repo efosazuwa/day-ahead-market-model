@@ -1,3 +1,4 @@
+
 # Energy Market Arbitrage
 
 ## Summary
@@ -7,7 +8,10 @@ The formulation below provides a structured optimization approach for determinin
 **Note:**
 For the data analysis notebook an additionally library, Plotly, is needed to properly view. That package is included in the `pyproject.toml`
 
-
+$$
+\usepackage{underscore}
+\usepackage[T1]{fontenc}
+$$
 ## Sets & Indices
 - $T$  : Set of time periods (hours in a single day)
 -  $S$  : Set of scenarios
