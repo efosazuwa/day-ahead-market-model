@@ -27,7 +27,7 @@ For the data analysis notebook an additionally library, Plotly, is needed to pro
 
 
 ## Objective
-**Maximize total expected revenue**\   
+**Maximize total expected revenue**\
 $$\max \frac{1}{\text{NumScenarios}} \sum_{s \in S} \sum_{t \in T} \Big( \text{OfferQuantity}_t \cdot (\text{DAPrice}_{s,t} - \text{RTPrice}_{s,t}) + \text{BidQuantity}_t \cdot (\text{RTPrice}_{s,t} - \text{DAPrice}_{s,t}) + \text{WindGen}_{s,t} \cdot \text{RTPrice}_{s,t} \Big)$$
 
 
