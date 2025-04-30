@@ -15,7 +15,7 @@ For the data analysis notebook an additionally library, Plotly, is needed to pro
 
 ## Parameters
 -  ${DA\_price}_{s,t}$  : Day-ahead market price at time $t$, scenario $s$  ($/MWh)
--  $\mathrm{RT\_price}_{s,t}$  : Real-time market price at time $t$, scenario $s$ ($/MWh)
+-  $\texttt{RT\_price}_{s,t}$  : Real-time market price at time $t$, scenario $s$ ($/MWh)
 -  $\text{wind\_gen}_{s,t}$  : Wind power generation at time $t$, scenario $s$ (MW)
 
 ## Decision Variables
