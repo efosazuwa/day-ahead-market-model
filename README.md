@@ -36,25 +36,22 @@ For the data analysis notebook an additionally library, Plotly, is needed to pro
 ## Constraints
 
 1. **Offer Quantity Constraint:**
-   $$
+   ```math
    \text{OfferQuantity}_{t} \leq \text{WindGen}_{s, t} \quad \forall t \in T, s \in S
-   $$
+   ```
 
 2. **Bid Quantity Constraint:**
-   $$
+   ```math
     \text{BidQuantity}_{t} \leq \text{OfferQuantity}_{t}, \quad \forall t \in T
-   $$
+   ```
 
 3. **Offer(Sell) Market Participation Constraint:**
-   $$
+   ```math
    \text{OfferPrice}_{t} \geq \text{DAPrice}_{s,t}, \quad \forall t \in T, s \in S
-   $$
+   ```
 
 4. **Bid(Buy) Market Participation Constraint:**
-   $$
+   ```math
    \text{BidPrice}_{t} \leq \text{DAPrice}_{s,t}, \quad \forall t \in T, s \in S
-   $$
-
-
-**The Cauchy-Schwarz Inequality**\
-$$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$$
+   ```
+   
