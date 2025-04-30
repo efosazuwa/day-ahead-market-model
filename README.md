@@ -14,22 +14,22 @@ For the data analysis notebook an additionally library, Plotly, is needed to pro
 -  $S$  : Set of scenarios
 
 ## Parameters
--  ${DA\_price}_{s,t}$  : Day-ahead market price at time $t$, scenario $s$  ($/MWh)
--  $\texttt{RT\_price}_{s,t}$  : Real-time market price at time $t$, scenario $s$ ($/MWh)
--  $\text{wind\_gen}_{s,t}$  : Wind power generation at time $t$, scenario $s$ (MW)
+-  $\text{DAPrice}_{s,t}$  : Day-ahead market price at time $t$, scenario $s$  ($/MWh)
+-  $\text{RTPrice}_{s,t}$  : Real-time market price at time $t$, scenario $s$ ($/MWh)
+-  $\text{WindGen}_{s,t}$  : Wind power generation at time $t$, scenario $s$ (MW)
 
 ## Decision Variables
-- $\text{offer\_quantity}_{t}$ : Energy offered in the market at time $t$
-- $\text{bid\_quantity}_{t}$ : Energy bid in the market at time $t$
-- $\text{offer\_price}_{t}$ : Offer price at time $t$ ($/MWh)
-- $\text{bid\_price}_{t}$ : Bid price at time $t$ ($/MWh)
+- $\text{OfferQuantity}_{t}$ : Energy offered in the market at time $t$
+- $\text{BidQuantity}_{t}$ : Energy bid in the market at time $t$
+- $\text{OfferPrice}_{t}$ : Offer price at time $t$ ($/MWh)
+- $\text{BidPrice}_{t}$ : Bid price at time $t$ ($/MWh)
 
 
 
 ## Objective
 Maximize total expected revenue:
 $$
-\max \frac{1}{\text{num\_scenarios}} \sum_{s \in S} \sum_{t \in T} \Big( \text{offer\_quantity}_t \cdot (\text{DA\_price}_{s,t} - \text{RT\_price}_{s,t}) + \text{bid\_quantity}_t \cdot (\text{RT\_price}_{s,t} - \text{DA\_price}_{s,t}) + \text{wind\_generation}_{s,t} \cdot \text{RT\_price}_{s,t} \Big)
+\max \frac{1}{\text{NumScenarios}} \sum_{s \in S} \sum_{t \in T} \Big( \text{OfferQuantity}_t \cdot (\text{DAPrice}_{s,t} - \text{RTPrice}_{s,t}) + \text{BidQuantity}_t \cdot (\text{RTPrice}_{s,t} - \text{DAPrice}_{s,t}) + \text{WindGen}_{s,t} \cdot \text{RTPrice}_{s,t} \Big)
 $$
 
 
@@ -37,22 +37,22 @@ $$
 
 1. **Offer Quantity Constraint:**
    $$
-   \text{offer\_quantity}_{t} \leq \text{wind\_gen}_{s, t} \quad \forall t \in T, s \in S
+   \text{OfferQuantity}_{t} \leq \text{WindGen}_{s, t} \quad \forall t \in T, s \in S
    $$
 
 2. **Bid Quantity Constraint:**
    $$
-    \text{bid\_quantity}_{t} \leq \text{offer\_quantity}_{t}, \quad \forall t \in T
+    \text{BidQuantity}_{t} \leq \text{OfferQuantity}_{t}, \quad \forall t \in T
    $$
 
 3. **Offer(Sell) Market Participation Constraint:**
    $$
-   \text{offer\_price}_{t} \geq \text{DA\_price}_{s,t}, \quad \forall t \in T, s \in S
+   \text{OfferPrice}_{t} \geq \text{DAPrice}_{s,t}, \quad \forall t \in T, s \in S
    $$
 
 4. **Bid(Buy) Market Participation Constraint:**
    $$
-   \text{bid\_price}_{t} \leq \text{DA\_price}_{s,t}, \quad \forall t \in T, s \in S
+   \text{BidPrice}_{t} \leq \text{DAPrice}_{s,t}, \quad \forall t \in T, s \in S
    $$
 
 
