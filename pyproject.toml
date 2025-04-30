@@ -3,12 +3,10 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "energy-optimization-challenge"
+name = "energy-optimization"
 version = "0.1.0"
-description = "Energy Market Optimization Challenge"
-authors = [
-    {name = "Habitat US", email = "datascience@habitat.us"}
-]
+description = "Energy Market Optimization "
+
 requires-python = ">=3.8"
 license = {text = "MIT"}
 dependencies = [
@@ -36,7 +34,7 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["energy_optimization_challenge"]
+packages = ["energy_optimization"]
 
 [tool.black]
 line-length = 88
