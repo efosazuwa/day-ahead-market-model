@@ -8,17 +8,14 @@ The formulation below provides a structured optimization approach for determinin
 **Note:**
 For the data analysis notebook an additionally library, Plotly, is needed to properly view. That package is included in the `pyproject.toml`
 
-$$
-\usepackage{underscore}
-\usepackage[T1]{fontenc}
-$$
+
 ## Sets & Indices
 - $T$  : Set of time periods (hours in a single day)
 -  $S$  : Set of scenarios
 
 ## Parameters
 -  ${DA\_price}_{s,t}$  : Day-ahead market price at time $t$, scenario $s$  ($/MWh)
--  $\text{RT\_price}_{s,t}$  : Real-time market price at time $t$, scenario $s$ ($/MWh)
+-  $\mathrm{RT\_price}_{s,t}$  : Real-time market price at time $t$, scenario $s$ ($/MWh)
 -  $\text{wind\_gen}_{s,t}$  : Wind power generation at time $t$, scenario $s$ (MW)
 
 ## Decision Variables
