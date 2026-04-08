@@ -1,5 +1,6 @@
 
 # Energy Market Arbitrage
+By: Efosa Osazuwa
 
 ## Summary
 The formulation below provides a structured optimization approach for determining a bidding and offering strategy in the electricity market while considering uncertainty in wind generation and market prices. The objective function accounts for expected revenue across 100 different price scenarios by using the several scenarios and assuming they are all equally likely.  
