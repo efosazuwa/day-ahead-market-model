@@ -1,5 +1,7 @@
 # Day-Ahead Bidding for Wind Power
 
+By: Efosa Osazuwa
+
 How much wind generation should you schedule day-ahead when both prices and production are uncertain? This Pyomo model chooses one schedule for a 24-hour day and maximizes expected revenue across 100 equally weighted synthetic scenarios.
 
 ## Worked example
