@@ -1,57 +1,41 @@
+# Day-Ahead Bidding for Wind Power
 
-# Energy Market Arbitrage
+How much wind generation should you schedule day-ahead when both prices and production are uncertain? This Pyomo model chooses one schedule for a 24-hour day and maximizes expected revenue across 100 equally weighted synthetic scenarios.
 
-## Summary
-The formulation below provides a structured optimization approach for determining a bidding and offering strategy in the electricity market while considering uncertainty in wind generation and market prices. The objective function accounts for expected revenue across 100 different price scenarios by using the several scenarios and assuming they are all equally likely.  
+## Worked example
 
+The model averages **$46,781** per scenario day, compared with **$39,899** for selling all wind generation at real-time prices. That is a **17.25% increase in modeled revenue** across the scenarios used to solve the schedule.
 
-**Note:**
-For the data analysis notebook an additionally library, Plotly, is needed to properly view. That package is included in the `pyproject.toml`
+![Hourly net day-ahead offers and minimum scenario wind above, with mean day-ahead minus real-time prices below](docs/images/bidding-schedule.png)
 
+The teal bars show the net day-ahead offer, equal to the offer minus the buyback quantity. The model schedules a net offer when the average day-ahead price exceeds the average real-time price and every scenario has wind available. The lowest wind forecast caps the offer for that hour.
 
-## Sets & Indices
-- $T$  : Set of time periods (hours in a single day)
--  $S$  : Set of scenarios
+## Run the example
 
-## Parameters
--  $\text{DAPrice}_{s,t}$  : Day-ahead market price at time $t$, scenario $s$  ($/MWh)
--  $\text{RTPrice}_{s,t}$  : Real-time market price at time $t$, scenario $s$ ($/MWh)
--  $\text{WindGen}_{s,t}$  : Wind power generation at time $t$, scenario $s$ (MW)
+From the repository root, use Python 3.11, [uv](https://docs.astral.sh/uv/), and [GLPK](https://pyomo.readthedocs.io/en/stable/getting_started/solvers.html). Install GLPK with `brew install glpk` on macOS or `sudo apt install glpk-utils` on Debian and Ubuntu. Confirm that `glpsol` is on your `PATH`.
 
-## Decision Variables
-- $\text{OfferQuantity}_{t}$ : Energy offered in the market at time $t$
-- $\text{BidQuantity}_{t}$ : Energy bid in the market at time $t$
-- $\text{OfferPrice}_{t}$ : Offer price at time $t$ ($/MWh)
-- $\text{BidPrice}_{t}$ : Bid price at time $t$ ($/MWh)
-
-
-
-## Objective
-**Maximize total expected revenue**\
-```math
-\max \frac{1}{\text{NumScenarios}} \sum_{s \in S} \sum_{t \in T} \Big( \text{OfferQuantity}_t \cdot (\text{DAPrice}_{s,t} - \text{RTPrice}_{s,t}) + \text{BidQuantity}_t \cdot (\text{RTPrice}_{s,t} - \text{DAPrice}_{s,t}) + \text{WindGen}_{s,t} \cdot \text{RTPrice}_{s,t} \Big)
+```sh
+uv run --locked --python 3.11 -m energy_optimization.example
 ```
 
+The command reads the [tracked scenario data](data/energy_market_samples.npz), prints both revenue figures, and regenerates the chart. Pass `--output path/to/chart.png` to save it elsewhere. The [analysis notebook](data_analysis.ipynb) shows the individual wind and price scenarios.
 
-## Constraints
+```sh
+uv run --locked --extra dev --python 3.11 -m pytest -q
+```
 
-1. **Offer Quantity Constraint:**
-   ```math
-   \text{OfferQuantity}_{t} \leq \text{WindGen}_{s, t} \quad \forall t \in T, s \in S
-   ```
+## Model formulation
 
-2. **Bid Quantity Constraint:**
-   ```math
-    \text{BidQuantity}_{t} \leq \text{OfferQuantity}_{t}, \quad \forall t \in T
-   ```
+For each hour $t$, the model chooses nonnegative offer and buyback quantities $q^{offer}_t$ and $q^{bid}_t$, along with offer and bid prices. Each scenario $s$ supplies wind generation $W_{s,t}$, a day-ahead price $P^{DA}_{s,t}$, and a real-time price $P^{RT}_{s,t}$. Each interval is one hour, so the numeric MW quantity corresponds to the same number of MWh in settlement.
 
-3. **Offer(Sell) Market Participation Constraint:**
-   ```math
-   \text{OfferPrice}_{t} \geq \text{DAPrice}_{s,t}, \quad \forall t \in T, s \in S
-   ```
+```math
+\max \frac{1}{|S|} \sum_{s\in S}\sum_{t\in T}
+\left[
+W_{s,t}P^{RT}_{s,t}
++ \left(q^{offer}_t-q^{bid}_t\right)\left(P^{DA}_{s,t}-P^{RT}_{s,t}\right)
+\right]
+```
 
-4. **Bid(Buy) Market Participation Constraint:**
-   ```math
-   \text{BidPrice}_{t} \leq \text{DAPrice}_{s,t}, \quad \forall t \in T, s \in S
-   ```
-   
+The offer is capped by wind generation in every scenario. The buyback is capped by the offer. The original price constraints place the offer price at or above every scenario's day-ahead price and the bid price at or below it.
+
+The revenue expression applies the scheduled quantities in every scenario. It has no scenario-specific cleared volumes, and the bid and offer prices enter only the constraints. The reported increase is an in-sample comparison of expected revenue.
