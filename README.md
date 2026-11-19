@@ -28,16 +28,54 @@ uv run --locked --extra dev --python 3.11 -m pytest -q
 
 ## Model formulation
 
-For each hour $t$, the model chooses nonnegative offer and buyback quantities $q^{offer}_t$ and $q^{bid}_t$, along with offer and bid prices. Each scenario $s$ supplies wind generation $W_{s,t}$, a day-ahead price $P^{DA}_{s,t}$, and a real-time price $P^{RT}_{s,t}$. Each interval is one hour, so the numeric MW quantity corresponds to the same number of MWh in settlement.
+The model uses one set of hourly bid and offer decisions across the scenarios. Each interval lasts one hour, so the numeric MW quantity corresponds to the same number of MWh in settlement.
+
+### Sets & Indices
+
+- $T$  : Set of time periods (hours in a single day)
+-  $S$  : Set of scenarios
+
+### Parameters
+
+-  $\text{DAPrice}_{s,t}$  : Day-ahead market price at time $t$, scenario $s$  ($/MWh)
+-  $\text{RTPrice}_{s,t}$  : Real-time market price at time $t$, scenario $s$ ($/MWh)
+-  $\text{WindGen}_{s,t}$  : Wind power generation at time $t$, scenario $s$ (MW)
+
+### Decision Variables
+
+- $\text{OfferQuantity}_{t}$ : Energy offered in the market at time $t$
+- $\text{BidQuantity}_{t}$ : Energy bid in the market at time $t$
+- $\text{OfferPrice}_{t}$ : Offer price at time $t$ ($/MWh)
+- $\text{BidPrice}_{t}$ : Bid price at time $t$ ($/MWh)
+
+### Objective
+
+**Maximize total expected revenue**
 
 ```math
-\max \frac{1}{|S|} \sum_{s\in S}\sum_{t\in T}
-\left[
-W_{s,t}P^{RT}_{s,t}
-+ \left(q^{offer}_t-q^{bid}_t\right)\left(P^{DA}_{s,t}-P^{RT}_{s,t}\right)
-\right]
+\max \frac{1}{\text{NumScenarios}} \sum_{s \in S} \sum_{t \in T} \Big( \text{OfferQuantity}_t \cdot (\text{DAPrice}_{s,t} - \text{RTPrice}_{s,t}) + \text{BidQuantity}_t \cdot (\text{RTPrice}_{s,t} - \text{DAPrice}_{s,t}) + \text{WindGen}_{s,t} \cdot \text{RTPrice}_{s,t} \Big)
 ```
 
-The offer is capped by wind generation in every scenario. The buyback is capped by the offer. The original price constraints place the offer price at or above every scenario's day-ahead price and the bid price at or below it.
+### Constraints
+
+1. **Offer Quantity Constraint:**
+   ```math
+   \text{OfferQuantity}_{t} \leq \text{WindGen}_{s, t} \quad \forall t \in T, s \in S
+   ```
+
+2. **Bid Quantity Constraint:**
+   ```math
+    \text{BidQuantity}_{t} \leq \text{OfferQuantity}_{t}, \quad \forall t \in T
+   ```
+
+3. **Offer(Sell) Market Participation Constraint:**
+   ```math
+   \text{OfferPrice}_{t} \geq \text{DAPrice}_{s,t}, \quad \forall t \in T, s \in S
+   ```
+
+4. **Bid(Buy) Market Participation Constraint:**
+   ```math
+   \text{BidPrice}_{t} \leq \text{DAPrice}_{s,t}, \quad \forall t \in T, s \in S
+   ```
 
 The revenue expression applies the scheduled quantities in every scenario. It has no scenario-specific cleared volumes, and the bid and offer prices enter only the constraints. The reported increase is an in-sample comparison of expected revenue.
