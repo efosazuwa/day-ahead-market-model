@@ -4,6 +4,12 @@ By: Efosa Osazuwa
 
 How much wind generation should you schedule day-ahead when both prices and production are uncertain? This Pyomo model chooses one schedule for a 24-hour day and maximizes expected revenue across 100 equally weighted synthetic scenarios.
 
+## Scenarios
+
+The model uses 100 equally weighted scenarios for the same 24-hour day. Each scenario contains an hourly wind generation forecast and corresponding day-ahead and real-time prices. The gray lines below show the individual wind forecasts, and the blue line shows their hourly mean. The [analysis notebook](data_analysis.ipynb) also plots both sets of prices and their spread.
+
+![Hourly wind generation across 100 synthetic scenarios, with the mean forecast in blue](docs/images/wind-scenarios.png)
+
 ## Worked example
 
 The model averages **$46,781** per scenario day, compared with **$39,899** for selling all wind generation at real-time prices. That is a **17.25% increase in modeled revenue** across the scenarios used to solve the schedule.
