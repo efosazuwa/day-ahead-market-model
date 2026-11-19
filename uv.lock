@@ -810,7 +810,7 @@ wheels = [
 ]
 
 [[package]]
-name = "energy-optimization-challenge"
+name = "energy-optimization"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

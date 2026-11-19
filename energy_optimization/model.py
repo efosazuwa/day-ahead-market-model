@@ -1,14 +1,22 @@
-import os
+from __future__ import annotations
+
+from pathlib import Path
 from typing import List, Optional
 
 import numpy as np
 from numpy.typing import NDArray
-import pandas as pd 
 import plotly.graph_objects as go
 import pyomo.environ as pyo
 
 
-from sample_data_generator import generate_sample_data, load_sample_data
+SAMPLE_DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "energy_market_samples.npz"
+
+
+def load_sample_data(filepath=SAMPLE_DATA_PATH):
+    """Read the tracked sample scenario array and column names."""
+    with np.load(filepath) as archive:
+        return archive["data"], archive["target_names"].tolist()
+
 
 class EnergyArbitrageModel:
     """
@@ -84,12 +92,12 @@ class EnergyArbitrageModel:
 
         self.model = model
 
-    def solve(self, solver_name='glpk'):
+    def solve(self, solver_name='glpk', *, tee=True):
         """
         Solve the energy arbitrage model
         """
         solver = pyo.SolverFactory(solver_name)
-        result = solver.solve(self.model, tee=True)
+        result = solver.solve(self.model, tee=tee)
 
         return result
 
@@ -142,18 +150,12 @@ class EnergyArbitrageModel:
 
 
 if __name__ == "__main__":
-    fname = "energy_market_samples.npz"
-    base_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
-    # Check for sample data file
-    if not os.path.exists(os.path.join(base_dir, fname)): 
-        generate_sample_data()
-
-    data, target_names= load_sample_data()
+    data, target_names = load_sample_data()
     optimizer = EnergyArbitrageModel(
         scenario_data=data,
         target_names=target_names
     )
     optimizer.build_model()
-    optimizer.solve()
+    pyo.assert_optimal_termination(optimizer.solve())
     results = optimizer.get_results()
     optimizer.plot_energy_trading(results)
